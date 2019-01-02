@@ -1,4 +1,4 @@
-package com.loya.githudevs;
+package com.loya.githubdevs;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -15,10 +15,10 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.loya.githudevs.adapter.GithubAdapter;
-import com.loya.githudevs.model.GitItem;
-import com.loya.githudevs.model.GithubUser;
-import com.loya.githudevs.service.GithubUserService;
+import com.loya.githubdevs.adapter.GithubAdapter;
+import com.loya.githubdevs.model.GitItem;
+import com.loya.githubdevs.model.GithubUser;
+import com.loya.githubdevs.service.GithubUserService;
 
 import java.util.List;
 
