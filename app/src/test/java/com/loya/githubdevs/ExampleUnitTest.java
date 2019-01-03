@@ -1,4 +1,4 @@
-package com.loya.githudevs;
+package com.loya.githubdevs;
 
 import org.junit.Test;
 

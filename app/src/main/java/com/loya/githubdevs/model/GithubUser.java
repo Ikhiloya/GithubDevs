@@ -1,4 +1,4 @@
-package com.loya.githudevs.model;
+package com.loya.githubdevs.model;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

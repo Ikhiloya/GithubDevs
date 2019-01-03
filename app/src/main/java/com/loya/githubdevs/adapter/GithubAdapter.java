@@ -1,4 +1,4 @@
-package com.loya.githudevs.adapter;
+package com.loya.githubdevs.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -8,19 +8,18 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.loya.githudevs.R;
-import com.loya.githudevs.model.GitItem;
+import com.loya.githubdevs.R;
+import com.loya.githubdevs.model.GitItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
 public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder> {
     private Context context;
-    private List<GitItem> items;
+    private List<GitItem> mUsers;
 
-    public GithubAdapter(Context context, List<GitItem> items) {
+    public GithubAdapter(Context context) {
         this.context = context;
-        this.items = items;
     }
 
     @Override
@@ -31,16 +30,31 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        GitItem item = items.get(position);;
-        Picasso.get()
-                .load(item.getAvatarUrl())
-                .into(holder.mAvatar);
-        holder.mUsername.setText(item.getLogin());
+        if (mUsers != null) {
+            GitItem item = mUsers.get(position);
+            Picasso.get()
+                    .load(item.getAvatarUrl())
+                    .placeholder(R.drawable.ic_account_circle_black_24dp)
+                    .error(R.drawable.ic_error_outline_black_24dp)
+                    .into(holder.mAvatar);
+            holder.mUsername.setText(item.getLogin());
+        } else {
+            //Covers the case of data not being ready yet.
+            holder.mUsername.setText("No user yet...");
+
+        }
+
     }
+
+    public void setUsers(List<GitItem> users) {
+        mUsers = users;
+        notifyDataSetChanged();
+    }
+
 
     @Override
     public int getItemCount() {
-        return items.size();
+        return mUsers != null ? mUsers.size() : 0;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -54,5 +68,6 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
             mUsername = itemView.findViewById(R.id.username_text);
         }
     }
+
 
 }
