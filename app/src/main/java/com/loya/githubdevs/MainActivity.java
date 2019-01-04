@@ -2,6 +2,7 @@ package com.loya.githubdevs;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -21,10 +22,11 @@ import com.loya.githubdevs.model.GitItem;
 import java.util.List;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements GithubAdapter.ListItemClickListener {
 
     private RecyclerView mRecyclerView;
     private UserProfileViewModel mUserViewModel;
+    public static final String USER_ID ="userId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         //  initViews();
         mRecyclerView = findViewById(R.id.users_recycler);
-        final GithubAdapter mAdapter = new GithubAdapter(this);
+        final GithubAdapter mAdapter = new GithubAdapter(this, this);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -86,6 +91,13 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onListItemClick(int userId) {
+        Intent detailIntent = new Intent(MainActivity.this, DetailActivity.class);
+        detailIntent.putExtra(USER_ID, userId);
+        startActivity(detailIntent);
     }
 }
 

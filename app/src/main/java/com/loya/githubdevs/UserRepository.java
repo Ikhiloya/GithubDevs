@@ -23,6 +23,7 @@ import retrofit2.Response;
 public class UserRepository {
     private UserDao mUserDao;
     private LiveData<List<GitItem>> mAllUsers;
+    private LiveData<GitItem> mUser;
     private GithubUserService githubUserService;
     private static String LOG_TAG = UserRepository.class.getSimpleName();
 
@@ -35,14 +36,20 @@ public class UserRepository {
     }
 
     /**
-     *
      * @return a list of users stored in the db if there is
      */
     public LiveData<List<GitItem>> getAllUsers() {
         LiveData<List<GitItem>> users = mAllUsers;
-        Log.d(LOG_TAG, "retrieved from database successful");
+        Log.d(LOG_TAG, "retrieved list of users from database successful");
         return users;
     }
+
+    public LiveData<GitItem> getUser(int userId) {
+        LiveData<GitItem> user = mUserDao.loadUser(userId);
+        Log.d(LOG_TAG, "retrieved user from database successful");
+        return user;
+    }
+
 
     /**
      * method that makes the network call in a separate thread and inserts the result into the db
@@ -60,6 +67,13 @@ public class UserRepository {
                     if (response.isSuccessful()) {
                         GithubUser user = response.body();
                         List<GitItem> users = user.getItems();
+                        System.out.println("***********************************");
+                        System.out.println("***********************************");
+                        System.out.println("***********************************");
+
+                        for (GitItem a : users) {
+                            System.out.println("id: " + a.getId() + " login: " + a.getLogin());
+                        }
                         Log.d(LOG_TAG, "Fetched from network successfully");
 
                         mUserDao.insertUsers(users);

@@ -18,4 +18,8 @@ public interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertUsers(List<GitItem> users);
+
+
+    @Query("SELECT * FROM user_table WHERE id = :userId")
+    LiveData<GitItem> loadUser(int userId);
 }

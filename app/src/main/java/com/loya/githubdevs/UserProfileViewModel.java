@@ -69,4 +69,10 @@ public class UserProfileViewModel extends AndroidViewModel {
     public void insertUsers() {
         mRepository.insertUsers();
     }
+
+    public LiveData<GitItem> getUser(int userId) {
+        return mRepository.getUser(userId);
+    }
+
+
 }

@@ -17,9 +17,19 @@ import java.util.List;
 public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder> {
     private Context context;
     private List<GitItem> mUsers;
+    private ListItemClickListener listItemClickListener;
 
-    public GithubAdapter(Context context) {
+
+    /**
+     * an interface to handle click events on a card
+     */
+    public interface ListItemClickListener {
+        void onListItemClick(int userId);
+    }
+
+    public GithubAdapter(Context context, ListItemClickListener listItemClickListener) {
         this.context = context;
+        this.listItemClickListener = listItemClickListener;
     }
 
     @Override
@@ -57,15 +67,23 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
         return mUsers != null ? mUsers.size() : 0;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private ImageView mAvatar;
         private TextView mUsername;
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             mAvatar = itemView.findViewById(R.id.profile_image);
             mUsername = itemView.findViewById(R.id.username_text);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            GitItem user = mUsers.get(getAdapterPosition());
+            int userId = user.getId();
+            listItemClickListener.onListItemClick(userId);
         }
     }
 
