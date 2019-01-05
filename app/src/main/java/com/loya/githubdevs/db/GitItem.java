@@ -1,4 +1,4 @@
-package com.loya.githubdevs.model;
+package com.loya.githubdevs.db;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;

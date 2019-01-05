@@ -1,23 +1,23 @@
-package com.loya.githubdevs;
+package com.loya.githubdevs.view;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.loya.githubdevs.R;
 import com.loya.githubdevs.adapter.GithubAdapter;
-import com.loya.githubdevs.model.GitItem;
+import com.loya.githubdevs.db.GitItem;
+import com.loya.githubdevs.util.Resource;
+import com.loya.githubdevs.viewmodel.UserProfileViewModel;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements GithubAdapter.Lis
 
     private RecyclerView mRecyclerView;
     private UserProfileViewModel mUserViewModel;
-    public static final String USER_ID ="userId";
+    public static final String USER_ID = "userId";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,14 +45,30 @@ public class MainActivity extends AppCompatActivity implements GithubAdapter.Lis
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // call to perform fetch users from the network and save it to the db
-        mUserViewModel.insertUsers();
+        //mUserViewModel.insertUsers();
 
 
-        mUserViewModel.getmAllUsers().observe(this, new Observer<List<GitItem>>() {
+//        mUserViewModel.getmAllUsers().observe(this, new Observer<List<GitItem>>() {
+//            @Override
+//            public void onChanged(@Nullable List<GitItem> users) {
+//                Toast.makeText(MainActivity.this, "@success", Toast.LENGTH_LONG).show();
+//                mAdapter.setUsers(users);
+//            }
+//        });
+
+        mUserViewModel.getmAllUsers().observe(this, new Observer<Resource<List<GitItem>>>() {
             @Override
-            public void onChanged(@Nullable List<GitItem> users) {
-                Toast.makeText(MainActivity.this, "@success", Toast.LENGTH_LONG).show();
-                mAdapter.setUsers(users);
+            public void onChanged(@Nullable Resource<List<GitItem>> listResource) {
+          //   Toast.makeText(MainActivity.this, listResource.message + "here msg", Toast.LENGTH_LONG).show();
+
+              Toast.makeText(MainActivity.this, "" + listResource.status , Toast.LENGTH_LONG).show();
+//                for(int i = 0; i< listResource.data.size(); i++){
+//                    System.out.println("******************************");
+//                    System.out.println("******************************");
+//                    System.out.println("******************************");
+//                    System.out.println(listResource.data.get(i).getLogin());
+//                }
+                mAdapter.setUsers(listResource.data);
             }
         });
 

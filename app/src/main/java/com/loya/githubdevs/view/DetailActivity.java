@@ -1,4 +1,4 @@
-package com.loya.githubdevs;
+package com.loya.githubdevs.view;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
@@ -11,7 +11,9 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.loya.githubdevs.model.GitItem;
+import com.loya.githubdevs.R;
+import com.loya.githubdevs.db.GitItem;
+import com.loya.githubdevs.viewmodel.UserProfileViewModel;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {

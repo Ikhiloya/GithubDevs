@@ -1,4 +1,4 @@
-package com.loya.githubdevs;
+package com.loya.githubdevs.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -7,8 +7,11 @@ import android.support.annotation.NonNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.loya.githubdevs.model.GitItem;
-import com.loya.githubdevs.model.GithubUser;
+import com.loya.githubdevs.util.AppExecutors;
+import com.loya.githubdevs.util.Resource;
+import com.loya.githubdevs.adapter.LiveDataCallAdapterFactory;
+import com.loya.githubdevs.db.GitItem;
+import com.loya.githubdevs.repository.UserRepository;
 import com.loya.githubdevs.service.GithubUserService;
 
 import java.util.List;
@@ -26,7 +29,7 @@ public class UserProfileViewModel extends AndroidViewModel {
     private UserRepository mRepository;
 
 
-    private LiveData<List<GitItem>> mAllUsers;
+    private LiveData<Resource<List<GitItem>>> mAllUsers;
 
 
     public UserProfileViewModel(@NonNull Application application) {
@@ -50,25 +53,26 @@ public class UserProfileViewModel extends AndroidViewModel {
                 .addInterceptor(httpLoggingInterceptor)
                 .build();
 
-       Retrofit mRetrofit = new Retrofit.Builder()
+        Retrofit mRetrofit = new Retrofit.Builder()
                 .client(okHttpClient)
                 .baseUrl(BASE_URL)
+                .addCallAdapterFactory(new LiveDataCallAdapterFactory())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-       GithubUserService githubUserService =  mRetrofit.create(GithubUserService.class);
+        GithubUserService githubUserService = mRetrofit.create(GithubUserService.class);
 
-        mRepository = new UserRepository(application, githubUserService);
-        mAllUsers = mRepository.getAllUsers();
+        mRepository = new UserRepository(application, githubUserService, new AppExecutors());
+        //mAllUsers = mRepository.getAllUsers();
     }
 
-    LiveData<List<GitItem>> getmAllUsers() {
-        return mAllUsers;
+    public LiveData<Resource<List<GitItem>>> getmAllUsers() {
+        return mRepository.getAllUsers();
     }
 
-    public void insertUsers() {
-        mRepository.insertUsers();
-    }
+    //public void insertUsers() {
+//        mRepository.insertUsers();
+//    }
 
     public LiveData<GitItem> getUser(int userId) {
         return mRepository.getUser(userId);

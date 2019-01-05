@@ -1,12 +1,15 @@
 package com.loya.githubdevs.service;
 
-import com.loya.githubdevs.model.GithubUser;
+import android.arch.lifecycle.LiveData;
 
-import retrofit2.Call;
+import com.loya.githubdevs.db.GithubUser;
+
 import retrofit2.http.GET;
 import retrofit2.http.Query;
 
 public interface GithubUserService {
+
+//     Call<Response<GithubUser> getGithubUsers(@Query("q") String params);
     @GET("search/users")
-    Call<GithubUser> getGithubUsers(@Query("q") String params);
+    LiveData<ApiResponse<GithubUser>> getGithubUsers(@Query("q") String params);
 }

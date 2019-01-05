@@ -9,7 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.loya.githubdevs.R;
-import com.loya.githubdevs.model.GitItem;
+import com.loya.githubdevs.db.GitItem;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
