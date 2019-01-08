@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder> {
+    private final Picasso picasso;
     private Context context;
     private List<GitItem> mUsers;
     private ListItemClickListener listItemClickListener;
@@ -27,9 +28,10 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
         void onListItemClick(int userId);
     }
 
-    public GithubAdapter(Context context, ListItemClickListener listItemClickListener) {
+    public GithubAdapter(Context context, ListItemClickListener listItemClickListener, Picasso picasso) {
         this.context = context;
         this.listItemClickListener = listItemClickListener;
+        this.picasso = picasso;
     }
 
     @Override
@@ -42,16 +44,14 @@ public class GithubAdapter extends RecyclerView.Adapter<GithubAdapter.ViewHolder
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (mUsers != null) {
             GitItem item = mUsers.get(position);
-            Picasso.get()
-                    .load(item.getAvatarUrl())
+                    picasso.load(item.getAvatarUrl())
                     .placeholder(R.drawable.ic_account_circle_black_24dp)
                     .error(R.drawable.ic_error_outline_black_24dp)
                     .into(holder.mAvatar);
             holder.mUsername.setText(item.getLogin());
         } else {
             //Covers the case of data not being ready yet.
-            holder.mUsername.setText("No user yet...");
-
+            holder.mUsername.setText(R.string.no_user_yet);
         }
 
     }

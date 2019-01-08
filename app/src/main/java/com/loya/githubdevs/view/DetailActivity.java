@@ -10,10 +10,16 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.loya.githubdevs.GithubApplication;
 import com.loya.githubdevs.R;
 import com.loya.githubdevs.db.GitItem;
+import com.loya.githubdevs.repository.UserRepository;
+import com.loya.githubdevs.service.GithubUserService;
+import com.loya.githubdevs.util.AppExecutors;
 import com.loya.githubdevs.viewmodel.UserProfileViewModel;
+import com.loya.githubdevs.viewmodel.ViewModelFactory;
 import com.squareup.picasso.Picasso;
 
 public class DetailActivity extends AppCompatActivity {
@@ -24,12 +30,25 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mUsernameText;
     private String mUsername;
     private String mProfileUrl;
+    private GithubUserService mGithubUserService;
+    private UserRepository mRepository;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
+
+
+        mGithubUserService = GithubApplication.get(DetailActivity.this).getGithubUserService();
+
+        mRepository = new UserRepository(getApplication(), mGithubUserService, new AppExecutors());
+
+        // the factory and its dependencies instead should be injected with DI framework like Dagger
+        ViewModelFactory factory = new ViewModelFactory(mRepository);
+
+        mUserViewModel = ViewModelProviders.of(this, factory).get(UserProfileViewModel.class);
+
         mImageView = findViewById(R.id.detail_image);
         mUsernameText = findViewById(R.id.detail_username);
 
@@ -37,21 +56,20 @@ public class DetailActivity extends AppCompatActivity {
         if (intent != null) {
             if (intent.hasExtra(MainActivity.USER_ID)) {
                 userId = intent.getIntExtra(MainActivity.USER_ID, 0);
+                mUserViewModel.getUser(userId).observe(this, new Observer<GitItem>() {
+                    @Override
+                    public void onChanged(@Nullable GitItem user) {
+                        System.out.println("id: " + user.getId() + " Login: " + user.getLogin());
+                        mUsername = user.getLogin();
+                        mProfileUrl = user.getHtmlUrl();
+                        loadImage(user.getAvatarUrl());
+                        mUsernameText.setText(mUsername);
+                    }
+                });
+            } else {
+                Toast.makeText(DetailActivity.this, "User not found", Toast.LENGTH_LONG).show();
+                return;
             }
-
-            mUserViewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
-
-            mUserViewModel.getUser(userId).observe(this, new Observer<GitItem>() {
-                @Override
-                public void onChanged(@Nullable GitItem user) {
-                    System.out.println("id: " + user.getId() + " Login: " + user.getLogin());
-                    mUsername = user.getLogin();
-                    mProfileUrl = user.getHtmlUrl();
-                    loadImage(user.getAvatarUrl());
-                    mUsernameText.setText(mUsername);
-                }
-            });
-
         }
     }
 

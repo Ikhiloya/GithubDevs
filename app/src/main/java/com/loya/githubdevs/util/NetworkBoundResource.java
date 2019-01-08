@@ -99,4 +99,6 @@ public abstract class NetworkBoundResource<ResultType, RequestType> {
     @NonNull
     @MainThread
     protected abstract LiveData<ApiResponse<RequestType>> createCall();
+
+
 }

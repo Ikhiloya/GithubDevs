@@ -2,22 +2,33 @@ package com.loya.githubdevs.view;
 
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
-
+import com.loya.githubdevs.GithubApplication;
 import com.loya.githubdevs.R;
 import com.loya.githubdevs.adapter.GithubAdapter;
 import com.loya.githubdevs.db.GitItem;
+import com.loya.githubdevs.repository.UserRepository;
+import com.loya.githubdevs.service.GithubUserService;
+import com.loya.githubdevs.util.AppExecutors;
 import com.loya.githubdevs.util.Resource;
 import com.loya.githubdevs.viewmodel.UserProfileViewModel;
+import com.loya.githubdevs.viewmodel.ViewModelFactory;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -27,6 +38,15 @@ public class MainActivity extends AppCompatActivity implements GithubAdapter.Lis
     private RecyclerView mRecyclerView;
     private UserProfileViewModel mUserViewModel;
     public static final String USER_ID = "userId";
+    private ConnectivityManager cm;
+    private boolean isConnected;
+    private UserRepository mRepository;
+    private  GithubUserService mGithubUserService;
+
+    private NetworkInfo activeNetwork;
+    private Picasso mPicasso;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,44 +54,68 @@ public class MainActivity extends AppCompatActivity implements GithubAdapter.Lis
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        mGithubUserService = GithubApplication.get(MainActivity.this).getGithubUserService();
+        mPicasso = GithubApplication.get(MainActivity.this).getPicasso();
 
-        mUserViewModel = ViewModelProviders.of(this).get(UserProfileViewModel.class);
+        mRepository = new UserRepository(getApplication(), mGithubUserService, new AppExecutors());
+
+
+        // the factory and its dependencies instead should be injected with DI framework like Dagger
+        ViewModelFactory factory = new ViewModelFactory(mRepository);
+
+        mUserViewModel = ViewModelProviders.of(this, factory).get(UserProfileViewModel.class);
 
         //  initViews();
         mRecyclerView = findViewById(R.id.users_recycler);
-        final GithubAdapter mAdapter = new GithubAdapter(this, this);
+        final GithubAdapter mAdapter = new GithubAdapter(this, this, mPicasso);
         mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setHasFixedSize(true);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // call to perform fetch users from the network and save it to the db
-        //mUserViewModel.insertUsers();
+        cm = (ConnectivityManager) this.getSystemService(Context.CONNECTIVITY_SERVICE);
 
+        getUsers(mAdapter);
 
-//        mUserViewModel.getmAllUsers().observe(this, new Observer<List<GitItem>>() {
-//            @Override
-//            public void onChanged(@Nullable List<GitItem> users) {
-//                Toast.makeText(MainActivity.this, "@success", Toast.LENGTH_LONG).show();
-//                mAdapter.setUsers(users);
-//            }
-//        });
-
-        mUserViewModel.getmAllUsers().observe(this, new Observer<Resource<List<GitItem>>>() {
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onChanged(@Nullable Resource<List<GitItem>> listResource) {
-          //   Toast.makeText(MainActivity.this, listResource.message + "here msg", Toast.LENGTH_LONG).show();
+            public void onClick(View view) {
+                //check if there is a network connection
+                // if there is a network connection the LoaderManager is called but
+                //  displays a message if there's no network connection
+                activeNetwork = cm.getActiveNetworkInfo();
+                isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+                if (isConnected) {
+                    mUserViewModel.refreshUserData().observe(MainActivity.this, new Observer<Resource<List<GitItem>>>() {
+                        @Override
+                        public void onChanged(@Nullable Resource<List<GitItem>> listResource) {
+//                            Toast.makeText(MainActivity.this, "second" + listResource.status, Toast.LENGTH_LONG).show();
+                            Snackbar.make(view, "refresh:" + listResource.status, Snackbar.LENGTH_LONG)
+                                    .setAction("Action", null).show();
+                            mAdapter.setUsers(listResource.data);
+                        }
+                    });
 
-              Toast.makeText(MainActivity.this, "" + listResource.status , Toast.LENGTH_LONG).show();
-//                for(int i = 0; i< listResource.data.size(); i++){
-//                    System.out.println("******************************");
-//                    System.out.println("******************************");
-//                    System.out.println("******************************");
-//                    System.out.println(listResource.data.get(i).getLogin());
-//                }
-                mAdapter.setUsers(listResource.data);
+                } else {
+                    Snackbar.make(view, "no connection", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+
+                }
+
             }
         });
 
+
+    }
+
+    private void getUsers(GithubAdapter mAdapter) {
+        mUserViewModel.getmAllUsers().observe(this, new Observer<Resource<List<GitItem>>>() {
+            @Override
+            public void onChanged(@Nullable Resource<List<GitItem>> listResource) {
+                Toast.makeText(MainActivity.this, "" + listResource.status, Toast.LENGTH_LONG).show();
+                mAdapter.setUsers(listResource.data);
+            }
+        });
     }
 
 
