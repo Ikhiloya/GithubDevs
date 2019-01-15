@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">GithubDevs</string>
+    <string name="action_settings">Settings</string>
+    <string name="share">share</string>
+    <string name="visit">visit</string>
+    <string name="no_user_yet">No user yet...</string>
+</resources>
