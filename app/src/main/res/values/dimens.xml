@@ -1,3 +1,13 @@
 <resources>
     <dimen name="fab_margin">16dp</dimen>
+    <dimen name="margin_24">24dp</dimen>
+    <dimen name="margin_8">8dp</dimen>
+    <dimen name="margin_16">16dp</dimen>
+    <dimen name="padding_right">16dp</dimen>
+    <dimen name="padding_top">16dp</dimen>
+    <dimen name="padding_bottom">16dp</dimen>
+    <dimen name="padding_left">16dp</dimen>
+    <dimen name="padding_4">4dp</dimen>
+    <dimen name="medium_string">18sp</dimen>
+    <dimen name="margin_4">4dp</dimen>
 </resources>

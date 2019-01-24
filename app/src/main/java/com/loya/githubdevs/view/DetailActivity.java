@@ -68,7 +68,6 @@ public class DetailActivity extends AppCompatActivity {
                 });
             } else {
                 Toast.makeText(DetailActivity.this, "User not found", Toast.LENGTH_LONG).show();
-                return;
             }
         }
     }

@@ -4,4 +4,9 @@
     <string name="share">share</string>
     <string name="visit">visit</string>
     <string name="no_user_yet">No user yet...</string>
+    <string name="in_LoadInBackground">loading in background</string>
+    <string name="in_onStartLoading">in onStartLoading</string>
+    <string name="in_onCreateLoader">in onCreateLoader</string>
+    <string name="photography_placeholder">Photography</string>
+    <string name="network_success_string">Fetched from network successfully</string>
 </resources>

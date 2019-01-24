@@ -2,6 +2,8 @@ package com.loya.githubdevs.viewmodel;
 
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
+import android.content.Context;
+
 import com.loya.githubdevs.util.Resource;
 import com.loya.githubdevs.db.GitItem;
 import com.loya.githubdevs.repository.UserRepository;
@@ -21,10 +23,14 @@ public class UserProfileViewModel extends AndroidViewModel {
         return mRepository.getAllUsers(isRefresh);
     }
 
-    public LiveData<Resource<List<GitItem>>> refreshUserData() {
-        return mRepository.refreshUserData();
-    }
+//    public LiveData<Resource<List<GitItem>>> refreshUserData() {
+//        return mRepository.refreshUserData();
+//    }
 
+
+//    public Boolean refreshUserData(Context context) {
+//         return mRepository.insertUsers(context);
+//    }
     public LiveData<GitItem> getUser(int userId) {
         return mRepository.getUser(userId);
     }
